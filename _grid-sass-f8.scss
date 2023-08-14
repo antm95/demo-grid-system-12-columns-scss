@@ -1,0 +1,172 @@
+// ***** GRID SYSTEM 12 COLUMNS - F8 - SCSS *****
+@use "sass:math";
+
+// +++++ Variables +++++
+$grid-columns: 12;
+$grid-gutter-width: 30px;
+$grid-row-columns: 6;
+
+// Breakpoints
+$grid-breakpoints: (
+    xs: 0,
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px,
+    xxl: 1400px,
+);
+
+// Container
+$container-max-widths: (
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1320px,
+);
+// +++++++++++++++++++++
+
+// +++++ Mixins +++++
+@mixin make-media-query($dimension, $bypass: false) {
+    @if $bypass {
+        @content;
+    } @else {
+        @media (min-width: $dimension) {
+            @content;
+        }
+    }
+}
+// ++++++++++++++++++
+
+// ===== CONTAINER =====
+.container-fluid {
+    // Variables
+    $grid-gutter-width: 10px;
+
+    // Box Model
+    display: block;
+    width: 100%;
+    padding-inline: $grid-gutter-width * 0.5;
+}
+
+.container {
+    @extend .container-fluid;
+
+    // Box Model
+    margin-inline: auto;
+}
+// ===== ========= =====
+
+// ===== ROWS =====
+.row {
+    // Flexbox Model
+    display: flex;
+    flex-wrap: wrap;
+
+    // Box Model
+    margin-inline: -$grid-gutter-width * 0.5;
+
+    // Classes
+    &[class*="row-cols-"] > *,
+    > [class*="col-"] {
+        // Flexbox Model
+        flex: 0 0 auto;
+
+        // Box Model
+        padding-inline: $grid-gutter-width * 0.5;
+    }
+}
+// ===== ==== =====
+
+// ===== COLUMNS =====
+.col {
+    // Flexbox Model
+    flex: 1 0;
+
+    // Box Model
+    padding-inline: $grid-gutter-width * 0.5;
+}
+// ===== ======= =====
+
+// ===== MEDIA QUERY =====
+@each $breakpoint, $dimension in $grid-breakpoints {
+    // Variables
+    $max-width: map-get($container-max-widths, $breakpoint);
+    $infix: if($breakpoint == xs, "", "-#{$breakpoint}");
+
+    // Media Query
+    @include make-media-query($dimension, $breakpoint == xs) {
+        // Classes
+        // ----- CONTAINER -----
+        .container {
+            @if ($breakpoint == sm) {
+                // Variables
+                $grid-gutter-width: 24px;
+
+                // Box Model
+                padding-inline: $grid-gutter-width * 0.5;
+            }
+
+            @if ($breakpoint == lg) {
+                // Variables
+                $grid-gutter-width: 30px;
+
+                // Box Model
+                padding-inline: $grid-gutter-width * 0.5;
+            }
+
+            // Box Model
+            max-width: $max-width;
+        }
+        // ----- -------- ------
+
+        // ----- GUTTERS -----
+        .g#{$infix}-0 {
+            // Box Model
+            padding-inline: 0;
+        }
+        // ----- ------- -----
+
+        // ----- OFFSETS -----
+        @for $i from 0 through $grid-columns - 1 {
+            // Classes
+            .offset#{$infix}-#{$i} {
+                // Box Model
+                margin-left: math.div(100%, $grid-columns) * $i;
+            }
+        }
+        // ----- ------- -----
+
+        // ----- ROWS -----
+        .row {
+            @if ($breakpoint == sm) {
+                // Variables
+                $grid-gutter-width: 24px;
+
+                // Box Model
+                margin-inline: -$grid-gutter-width * 0.5;
+            }
+        }
+
+        @for $i from 1 through $grid-row-columns {
+            // Classes
+            .row.row-cols#{$infix}-#{$i} > * {
+                // Box Model
+                width: math.div(100%, $i);
+            }
+        }
+        // ----- ---- -----
+
+        // ----- COLUMNS -----
+        @for $i from 1 through $grid-columns {
+            // Classes
+            .row > .col#{$infix}-#{$i} {
+                // Box Model
+                width: math.div(100%, $grid-columns) * $i;
+            }
+        }
+        // ----- ------- -----
+    }
+}
+// ===== =========== =====
+// **********************************************
